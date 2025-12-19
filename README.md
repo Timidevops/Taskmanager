@@ -10,7 +10,7 @@ This project demonstrates a production-grade, fully automated DevOps pipeline de
 🔁 Blue-Green / Progressive Deployments
 📊 Monitoring & Observability with Prometheus & Grafana
 
-#🚀 Architecture Overview
+# 🚀 Architecture Overview
 
 This application is developed in Java (Maven) and packaged as a WAR file, running on Apache Tomcat inside a Docker container.
 It is deployed to Kubernetes using Helm charts, enabling consistent, repeatable, and scalable deployments.
@@ -27,7 +27,7 @@ Helm-based release management
 
 GitHub Actions for CI/CD automation
 
-#🛠️ Features
+# 🛠️ Features
 ✅ CI Pipeline (GitHub Actions)
 
 The CI pipeline is fully automated and triggered on every push or merge to the main branch.
@@ -44,7 +44,7 @@ Builds and pushes Docker images to a container registry
 
 Deploys the application to Kubernetes using Helm
 
-#📊 Code Quality & Security
+# 📊 Code Quality & Security
 
 Quality and security are enforced early in the pipeline to prevent issues from reaching production.
 
@@ -56,7 +56,7 @@ Trivy scans container images for HIGH and CRITICAL CVEs
 
 Deployments are automatically blocked if quality or security thresholds are not met.
 
-#📦 Deployment Strategy
+# 📦 Deployment Strategy
 
 The project implements a Blue-Green deployment strategy to ensure safe and reliable releases.
 
@@ -68,7 +68,7 @@ Instant rollback using a single Helm command
 
 Reduced production risk during deployments
 
-#🧭 Kubernetes Deployment (via Helm)
+# 🧭 Kubernetes Deployment (via Helm)
 
 All Kubernetes manifests are managed using Helm charts, located at:
 
@@ -85,7 +85,7 @@ helm upgrade taskmanager chart/taskmanager \
   --set image.tag=COMMIT_SHA
 
 
-#📊 Monitoring & Observability
+# 📊 Monitoring & Observability
 
 The application is monitored using Prometheus and Grafana, providing visibility into:
 
