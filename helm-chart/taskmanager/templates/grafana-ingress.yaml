@@ -1,0 +1,24 @@
+{{- if .Values.grafanaIngress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "taskmanager.fullname" . }}-grafana
+  namespace: {{ .Values.grafanaIngress.namespace | default .Release.Namespace }}
+  annotations:
+    {{- range $key, $value := .Values.grafanaIngress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.grafanaIngress.className }}
+  rules:
+    - host: {{ .Values.grafanaIngress.host }}
+      http:
+        paths:
+          - path: {{ .Values.grafanaIngress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.grafanaIngress.serviceName }}
+                port:
+                  number: {{ .Values.grafanaIngress.servicePort }}
+{{- end }}

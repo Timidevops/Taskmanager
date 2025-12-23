@@ -9,6 +9,10 @@ service:
   type: ClusterIP
   port: 80
   targetPort: 8080
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /actuator/prometheus
+    prometheus.io/port: "8080"
 
 ingress:
   enabled: true
@@ -54,3 +58,34 @@ probes:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 5
+
+prometheusIngress:
+  enabled: true
+  namespace: monitoring
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  host: prometheus.peaceakintayo.com
+  path: /
+  serviceName: prometheus-server
+  servicePort: 80
+
+grafanaIngress:
+  enabled: true
+  namespace: monitoring
+  className: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  host: grafana.peaceakintayo.com
+  path: /
+  serviceName: grafana
+  servicePort: 80
+
+serviceMonitor:
+  enabled: false
+  namespace: monitoring
+  interval: 15s
+  path: /actuator/prometheus
+  scrapeTimeout: 10s
+  labels: {}

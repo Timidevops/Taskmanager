@@ -97,5 +97,11 @@ Pod health and restarts
 
 Resource utilization
 
+✔ Explicit base-path
+✔ Global metric tagging
+✔ Prometheus export enabled
+✔ Compatible with kube-prometheus-stack
+✔ No security misconfigurations
+
 This ensures production-grade observability and faster incident response.
 

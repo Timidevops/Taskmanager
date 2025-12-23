@@ -3,6 +3,7 @@
 const API_BASE_URL = '/api/tasks';
 let tasks = [];
 let currentFilter = 'all';
+let detailTask = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,6 +16,10 @@ function initializeApp() {
     
     if (document.getElementById('taskTable')) {
         loadTasks();
+    }
+    
+    if (document.getElementById('taskDetailCard')) {
+        loadTaskDetails();
     }
     
     setupEventListeners();
@@ -40,6 +45,17 @@ function setupEventListeners() {
     if (editForm) {
         editForm.addEventListener('submit', handleEditTask);
         loadTaskForEdit();
+    }
+
+    // Detail page buttons
+    const toggleBtn = document.getElementById('detailToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', handleDetailToggleStatus);
+    }
+
+    const deleteBtn = document.getElementById('detailDeleteBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', handleDetailDelete);
     }
 }
 
@@ -91,9 +107,9 @@ function createTaskRow(task) {
         <td>
             <div class="d-flex align-items-center">
                 <i class="fas fa-file-alt text-primary me-2"></i>
-                <span class="${task.completed ? 'text-decoration-line-through text-muted' : ''}">
+                <a href="task-details.html?id=${task.id}" class="text-decoration-none ${task.completed ? 'text-decoration-line-through text-muted' : ''}">
                     ${escapeHtml(task.title)}
-                </span>
+                </a>
             </div>
         </td>
         <td>
@@ -104,6 +120,9 @@ function createTaskRow(task) {
         <td>${statusBadge}</td>
         <td>
             <div class="btn-group" role="group">
+                <button class="btn btn-sm btn-outline-secondary" onclick="viewTask(${task.id})" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
                 <button class="btn btn-sm btn-outline-primary" onclick="editTask(${task.id})" title="Edit Task">
                     <i class="fas fa-edit"></i>
                 </button>
@@ -241,6 +260,10 @@ function editTask(id) {
     window.location.href = `edit-task.html?id=${id}`;
 }
 
+function viewTask(id) {
+    window.location.href = `task-details.html?id=${id}`;
+}
+
 function toggleTaskStatus(id) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
@@ -279,6 +302,91 @@ function deleteTask(id) {
     .then(() => {
         loadTasks();
         showSuccess('Task deleted successfully!');
+    })
+    .catch(error => {
+        console.error('Error deleting task:', error);
+        showError('Failed to delete task');
+    });
+}
+
+function loadTaskDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('id');
+    
+    if (!taskId) {
+        showError('Task ID not provided');
+        return;
+    }
+
+    fetch(`${API_BASE_URL}/${taskId}`)
+        .then(response => response.json())
+        .then(task => {
+            detailTask = task;
+            document.getElementById('detailId').textContent = `#${task.id}`;
+            document.getElementById('detailTitle').textContent = task.title;
+            document.getElementById('detailDescription').innerHTML = escapeHtml(task.description) || '<em>No description</em>';
+            document.getElementById('detailEditLink').href = `edit-task.html?id=${task.id}`;
+            renderDetailStatus(task.completed);
+        })
+        .catch(error => {
+            console.error('Error loading task:', error);
+            showError('Failed to load task details');
+        });
+}
+
+function renderDetailStatus(completed) {
+    const statusContainer = document.getElementById('detailStatus');
+    const toggleBtn = document.getElementById('detailToggleBtn');
+    if (!statusContainer || !toggleBtn) return;
+
+    statusContainer.innerHTML = completed
+        ? '<span class="status-badge status-completed"><i class="fas fa-check me-1"></i>Completed</span>'
+        : '<span class="status-badge status-pending"><i class="fas fa-clock me-1"></i>Pending</span>';
+
+    toggleBtn.className = `btn btn-${completed ? 'warning' : 'success'}`;
+    toggleBtn.innerHTML = completed
+        ? '<i class="fas fa-undo me-2"></i>Mark Pending'
+        : '<i class="fas fa-check me-2"></i>Mark Completed';
+}
+
+function handleDetailToggleStatus() {
+    if (!detailTask) return;
+    const updatedTask = {
+        ...detailTask,
+        completed: !detailTask.completed
+    };
+
+    fetch(`${API_BASE_URL}/${detailTask.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedTask)
+    })
+    .then(response => response.json())
+    .then(data => {
+        detailTask = updatedTask;
+        renderDetailStatus(updatedTask.completed);
+        showSuccess(`Task marked as ${updatedTask.completed ? 'completed' : 'pending'}!`);
+    })
+    .catch(error => {
+        console.error('Error updating task status:', error);
+        showError('Failed to update task status');
+    });
+}
+
+function handleDetailDelete() {
+    if (!detailTask) return;
+    if (!confirm('Are you sure you want to delete this task?')) {
+        return;
+    }
+
+    fetch(`${API_BASE_URL}/${detailTask.id}`, {
+        method: 'DELETE'
+    })
+    .then(() => {
+        showSuccess('Task deleted successfully!');
+        setTimeout(() => window.location.href = '/', 1200);
     })
     .catch(error => {
         console.error('Error deleting task:', error);

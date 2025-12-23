@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: taskmanager
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: taskmanager
+    export:
+      prometheus:
+        enabled: true
