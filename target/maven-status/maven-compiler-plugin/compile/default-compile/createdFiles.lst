@@ -1,0 +1,7 @@
+com/portfolio/taskmanager/service/TaskService.class
+com/portfolio/taskmanager/controller/TaskController.class
+com/portfolio/taskmanager/controller/HomeController.class
+com/portfolio/taskmanager/repository/TaskRepository.class
+com/portfolio/taskmanager/model/Task.class
+com/portfolio/taskmanager/ServletInitializer.class
+com/portfolio/taskmanager/TaskManagerApplication.class

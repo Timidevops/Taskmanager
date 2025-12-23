@@ -1,0 +1,38 @@
+{{- if .Values.blueGreen.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "taskmanager.fullname" . }}-green
+  labels:
+    app: {{ include "taskmanager.name" . }}
+    version: green
+spec:
+  replicas: {{ if eq .Values.blueGreen.activeSlot "green" }}{{ .Values.replicaCount }}{{ else }}0{{ end }}
+  selector:
+    matchLabels:
+      app: {{ include "taskmanager.name" . }}
+      version: green
+  template:
+    metadata:
+      labels:
+        app: {{ include "taskmanager.name" . }}
+        version: green
+    spec:
+      containers:
+      - name: taskmanager
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.targetPort }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.probes.liveness | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.probes.readiness | nindent 10 }}
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://{{ include "taskmanager.fullname" . }}-mysql:3306/{{ .Values.mysql.database }}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: {{ .Values.mysql.rootPassword }}
+{{- end }}

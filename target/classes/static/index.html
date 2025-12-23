@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager Pro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/app.js"></script>
+</head>
+<body class="page-bg">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-lg">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">
+        <i class="fas fa-tasks me-2 text-warning"></i>
+        Task Manager Pro
+      </a>
+      <div class="d-flex align-items-center">
+        <span class="badge bg-light text-dark me-3">
+          <i class="fas fa-clock me-1"></i>
+          <span id="currentTime"></span>
+        </span>
+        <div class="dropdown">
+          <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="fas fa-user-circle me-1"></i> Menu
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/"><i class="fas fa-home me-2"></i>Dashboard</a></li>
+            <li><a class="dropdown-item" href="add-task.html"><i class="fas fa-plus me-2"></i>Add Task</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="hero-section hero-with-visual text-white py-5">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="hero-badge">
+              <i class="fas fa-bolt"></i>
+              Focused productivity
+            </span>
+            <span class="hero-badge">
+              <i class="fas fa-shield-check"></i>
+              Organized & secure
+            </span>
+          </div>
+          <h1 class="display-5 fw-bold mb-3">Welcome to Task Manager Pro</h1>
+          <p class="lead mb-4 opacity-75">Organize your day, prioritize what matters most, and finish work with confidence across desktop and mobile.</p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="add-task.html" class="btn btn-warning btn-lg px-4 py-2">
+              <i class="fas fa-plus me-2"></i>Create New Task
+            </a>
+            <button class="btn btn-outline-light btn-lg px-4 py-2" onclick="scrollToTasks()">
+              <i class="fas fa-eye me-2"></i>View Tasks
+            </button>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mt-4">
+            <div class="mini-stat">
+              <div class="small text-uppercase text-white-50">Today</div>
+              <div class="fw-bold">Stay on top of tasks</div>
+            </div>
+            <div class="mini-stat">
+              <div class="small text-uppercase text-white-50">Sync</div>
+              <div class="fw-bold">Works on any device</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="hero-visual">
+            <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1000&q=80" alt="Organized workspace">
+            <div class="floating-note">
+              <i class="fas fa-calendar-check me-2 text-primary"></i>
+              Visualize your week
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="section-title mb-0">
+        <i class="fas fa-chart-pie text-primary"></i>
+        Dashboard snapshot
+      </div>
+      <span class="text-muted small">Live overview of your tasks</span>
+    </div>
+    <div class="row g-4 mb-5">
+      <div class="col-md-3">
+        <div class="card stat-card bg-primary text-white h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-list-check fa-3x mb-3"></i>
+            <h3 class="card-title" id="totalTasks">0</h3>
+            <p class="card-text">Total Tasks</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-success text-white h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-check-circle fa-3x mb-3"></i>
+            <h3 class="card-title" id="completedTasks">0</h3>
+            <p class="card-text">Completed</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-warning text-white h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-clock fa-3x mb-3"></i>
+            <h3 class="card-title" id="pendingTasks">0</h3>
+            <p class="card-text">Pending</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-info text-white h-100">
+          <div class="card-body text-center">
+            <i class="fas fa-chart-line fa-3x mb-3"></i>
+            <h3 class="card-title" id="progressPercent">0%</h3>
+            <p class="card-text">Progress</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks Section -->
+  <div class="container mb-5" id="tasksSection">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-lg border-0 glass-card">
+          <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="mb-0">
+                <i class="fas fa-tasks me-2"></i>Your Tasks
+              </h3>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-light btn-sm" onclick="filterTasks('all')">
+                  <i class="fas fa-list me-1"></i>All
+                </button>
+                <button class="btn btn-outline-light btn-sm" onclick="filterTasks('pending')">
+                  <i class="fas fa-clock me-1"></i>Pending
+                </button>
+                <button class="btn btn-outline-light btn-sm" onclick="filterTasks('completed')">
+                  <i class="fas fa-check me-1"></i>Completed
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0" id="taskTable">
+                <thead class="table-dark">
+                  <tr>
+                    <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                    <th><i class="fas fa-heading me-2"></i>Title</th>
+                    <th><i class="fas fa-align-left me-2"></i>Description</th>
+                    <th><i class="fas fa-flag me-2"></i>Status</th>
+                    <th><i class="fas fa-cogs me-2"></i>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div id="emptyState" class="text-center py-5" style="display: none;">
+              <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+              <h4 class="text-muted">No tasks found</h4>
+              <p class="text-muted">Start by creating your first task!</p>
+              <a href="add-task.html" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add Your First Task
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+      <p class="mb-0">
+        <i class="fas fa-heart text-danger me-1"></i>
+        Made with love by Timidevops
+        <i class="fas fa-code ms-2 me-1"></i>
+        © 2024
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

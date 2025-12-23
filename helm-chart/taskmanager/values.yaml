@@ -1,0 +1,56 @@
+replicaCount: 2
+
+image:
+  repository: timidevops/taskmanager
+  tag: 2.2
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: nginx
+  host: taskmanager.peaceakintayo.com
+  path: /
+
+mysql:
+  enabled: true
+  rootPassword: yourpassword
+  database: taskmanager
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+blueGreen:
+  enabled: true
+  activeSlot: blue
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+probes:
+  liveness:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 90
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 5
+  readiness:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5

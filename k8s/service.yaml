@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskmanager-service
+spec:
+  selector:
+    app: taskmanager
+    version: blue
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: ClusterIP
