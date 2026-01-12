@@ -40,7 +40,7 @@ Performs SonarQube quality gate analysis
 
 Scans dependencies and images using OWASP Dependency Check and Trivy
 
-Builds and pushes Docker images to a container registry
+Builds and pushes Docker images to a container registry OR GitHub Container Registry
 
 Deploys the application to Kubernetes using Helm
 
