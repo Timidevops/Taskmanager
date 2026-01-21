@@ -40,7 +40,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
       - name: OWASP Dependency Check
-        uses: jeremylong/gh-action-dependency-check@v9
+        uses: dependency-check/Dependency-Check_Action@v2.3.0
         with:
           project: taskmanager
           path: .
