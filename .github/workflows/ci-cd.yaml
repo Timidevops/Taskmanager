@@ -43,7 +43,7 @@ jobs:
             -DskipTests
 
       - name: OWASP Dependency Check
-        uses: jeremylong/DependencyCheck_Action@v3.0.2
+        uses: dependency-check/Dependency-Check_Action@v3.0.3
         with:
           project: taskmanager
           path: .
