@@ -11,8 +11,7 @@ This project demonstrates a production-grade, fully automated DevOps pipeline de
 📊 Monitoring & Observability with Prometheus & Grafana
 
 # What was implemented
-CI/CD with GitHub Actions
-
+- CI/CD with GitHub Actions
 - Java SAST (CodeQL)
 - Dependency vulnerability scanning (OWASP)
 - Container image scanning (Trivy)
