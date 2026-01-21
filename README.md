@@ -10,6 +10,16 @@ This project demonstrates a production-grade, fully automated DevOps pipeline de
 🔁 Blue-Green / Progressive Deployments
 📊 Monitoring & Observability with Prometheus & Grafana
 
+# What was implemented
+CI/CD with GitHub Actions
+
+- Java SAST (CodeQL)
+- Dependency vulnerability scanning (OWASP)
+- Container image scanning (Trivy)
+- Docker image lifecycle management
+- Helm-based Kubernetes deployments
+- AWS EKS authentication & rollout
+
 # 🚀 Architecture Overview
 
 This application is developed in Java (Maven) and packaged as a WAR file, running on Apache Tomcat inside a Docker container.
@@ -48,7 +58,7 @@ Deploys the application to Kubernetes using Helm
 
 Quality and security are enforced early in the pipeline to prevent issues from reaching production.
 
-SonarQube enforces quality gates (test coverage, bugs, code smells)
+GitHub CodeQL (test coverage, bugs, code smells)
 
 OWASP Dependency Check identifies vulnerable third-party dependencies
 
