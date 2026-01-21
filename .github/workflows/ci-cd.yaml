@@ -43,12 +43,12 @@ jobs:
             -DskipTests
 
       - name: OWASP Dependency Check
-        uses: jeremylong/gh-action-dependency-check@v9
+        uses: jeremylong/DependencyCheck_Action@v3.0.2
         with:
           project: taskmanager
           path: .
           format: "HTML"
-          out: dependency-check-report
+          out: reports
 
       - name: Log in to registry
         uses: docker/login-action@v3
