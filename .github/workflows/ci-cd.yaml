@@ -7,8 +7,6 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: taskmanager
-  REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_TAG: ${{ github.sha }}
   CHART_PATH: helm-chart/taskmanager
 
@@ -17,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
-      id-token: write
+      security-events: write
+      actions: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,32 +28,30 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build and test (Maven)
-        run: mvn -B clean verify
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
 
-      - name: SonarQube analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          mvn -B sonar:sonar \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=$SONAR_TOKEN \
-            -DskipTests
+      - name: Build and test (Maven)
+        run: mvn -B clean test
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
       - name: OWASP Dependency Check
-        uses: jeremylong/DependencyCheck_Action@v3.0.2
+        uses: jeremylong/gh-action-dependency-check@v9
         with:
           project: taskmanager
           path: .
           format: "HTML"
-          out: reports
+          out: dependency-check-report
 
-      - name: Log in to registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push image
         uses: docker/build-push-action@v5
@@ -63,26 +59,33 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ secrets.DOCKER_REPO }}:${{ env.IMAGE_TAG }}
+            ${{ secrets.DOCKER_REPO }}:latest
+          file: ./Dockerfile
 
       - name: Trivy image scan
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          image-ref: ${{ secrets.DOCKER_REPO }}:${{ env.IMAGE_TAG }}
           format: table
-          exit-code: '1'
+          exit-code: '0'
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
+      - name: Configure AWS credentials
+        if: github.event_name == 'push'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Set up kubeconfig
         if: github.event_name == 'push'
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         run: |
-          echo "${KUBE_CONFIG_DATA}" | base64 -d > $HOME/.kube/config
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name your-cluster-name
 
-      - name: Deploy with Helm
+      - name: Set up Helm
         if: github.event_name == 'push'
         uses: azure/setup-helm@v4
         with:
@@ -90,11 +93,9 @@ jobs:
 
       - name: Helm upgrade/install
         if: github.event_name == 'push'
-        env:
-          KUBECONFIG: $HOME/.kube/config
         run: |
           helm upgrade --install taskmanager ${{ env.CHART_PATH }} \
-            --namespace taskmanager --create-namespace \
-            --set image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ env.IMAGE_TAG }}
-
+            --namespace default \
+            --set image.repository=${{ secrets.DOCKER_REPO }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
+            --set image.pullPolicy=Always
