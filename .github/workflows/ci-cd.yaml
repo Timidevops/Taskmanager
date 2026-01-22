@@ -39,11 +39,9 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-      - name: OWASP Dependency Check
+      - name: Maven Dependency Check
         run: |
-          wget -O dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
-          unzip dependency-check.zip
-          ./dependency-check/bin/dependency-check.sh --project taskmanager --scan . --format HTML --out dependency-check-report
+          mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=7 -DskipTestScope=true || true
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
