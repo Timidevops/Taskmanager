@@ -85,7 +85,7 @@ jobs:
       - name: Set up kubeconfig
         if: github.event_name == 'push'
         run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name your-cluster-name
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name github-actions-cluster
 
       - name: Set up Helm
         if: github.event_name == 'push'
