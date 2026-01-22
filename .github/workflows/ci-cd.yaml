@@ -88,10 +88,13 @@ jobs:
           version: v3.12.3
 
       - name: Helm upgrade/install
-        if: github.event_name == 'push'
         run: |
           helm upgrade --install taskmanager ${{ env.CHART_PATH }} \
-            --namespace default \
+            --namespace monitoring \
+            --create-namespace \
             --set image.repository=${{ secrets.DOCKER_REPO }} \
             --set image.tag=${{ env.IMAGE_TAG }} \
-            --set image.pullPolicy=Always
+            --set image.pullPolicy=Always  
+
+
+
