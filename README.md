@@ -36,6 +36,8 @@ Helm-based release management
 
 GitHub Actions for CI/CD automation
 
+Prometheus & Grafana for monitoring and observability
+
 # 🛠️ Features
 ✅ CI Pipeline (GitHub Actions)
 
